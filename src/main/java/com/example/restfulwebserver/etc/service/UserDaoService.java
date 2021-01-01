@@ -5,9 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class UserDaoService {
@@ -44,6 +42,22 @@ public class UserDaoService {
         }
 
         return null;
+    }
+
+    public User deleteById(int id) {
+
+        Iterator<User> iterator = users.iterator();
+        while (iterator.hasNext()) {
+            User user = iterator.next();
+
+            if(user.getId() == id) {
+                iterator.remove();
+                return user;
+            }
+        }
+
+        return null;
+
     }
 
 }
