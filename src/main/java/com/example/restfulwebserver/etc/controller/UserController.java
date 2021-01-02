@@ -3,6 +3,9 @@ package com.example.restfulwebserver.etc.controller;
 import com.example.restfulwebserver.etc.domain.User;
 import com.example.restfulwebserver.etc.service.UserDaoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -11,6 +14,9 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -18,17 +24,26 @@ public class UserController {
 
 
     @GetMapping("/users")
-    public List<User> retrieveAllUsers(){
+    public List<User> retrieveAllUsers() {
         return userDaoService.findAll();
     }
 
     @GetMapping("/users/{id}")
-    public User retrieveUser(@PathVariable int id) {
+    public EntityModel<User> retrieveUser(@PathVariable int id) {
         User user = userDaoService.findOne(id);
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException(String.format("ID[%s] not found", id));
         }
-        return user;
+
+        //HATEOAS
+
+        EntityModel<User> model = EntityModel.of(user);
+        model.add(linkTo(methodOn(UserController.class).retrieveAllUsers()).withSelfRel());
+
+//        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(this.getClass()).retrieveAllUsers());
+//        model.add(linkBuilder.withRel("all-users"));
+
+        return model;
     }
 
     @PostMapping("/users")
@@ -44,11 +59,11 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public void deleteUser(@PathVariable int id){
+    public void deleteUser(@PathVariable int id) {
         User user = userDaoService.deleteById(id);
 
-        if(user == null) {
-            throw new UserNotFoundException(String.format("ID[%s] not found Exception",id));
+        if (user == null) {
+            throw new UserNotFoundException(String.format("ID[%s] not found Exception", id));
         }
     }
 }
