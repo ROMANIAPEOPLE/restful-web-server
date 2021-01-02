@@ -38,8 +38,8 @@ public class UserController {
         //HATEOAS
 
         EntityModel<User> model = EntityModel.of(user);
-        model.add(linkTo(methodOn(UserController.class).retrieveAllUsers()).withSelfRel());
 
+        model.add(linkTo(methodOn(UserController.class).retrieveAllUsers()).withSelfRel());
 //        WebMvcLinkBuilder linkBuilder = linkTo(methodOn(this.getClass()).retrieveAllUsers());
 //        model.add(linkBuilder.withRel("all-users"));
 
